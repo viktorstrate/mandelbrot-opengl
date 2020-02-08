@@ -38,5 +38,5 @@ include_directories(vendor/includes)
 add_executable(${PROJECT_NAME} ${SOURCES} ${VENDOR_SRCS})
 
 target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY})
-target_link_libraries(${PROJECT_NAME} glfw)
+target_link_libraries(${PROJECT_NAME} glfw OpenGL::GL ${CMAKE_DL_LIBS})
 
