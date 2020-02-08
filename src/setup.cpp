@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+// Initialize the window and setup OpenGL
 GLFWwindow* setupWindow() {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -9,10 +10,10 @@ GLFWwindow* setupWindow() {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 #ifdef __APPLE__
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-  GLFWwindow *window = glfwCreateWindow(800, 600, "Mandlebrot", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(800, 600, "Mandelbrot", NULL, NULL);
   if (window == NULL)
   {
     std::cout << "Failed to create GLFW window" << std::endl;
@@ -27,10 +28,9 @@ GLFWwindow* setupWindow() {
     return nullptr;
   }
 
-  // glViewport(0, 0, 800, 600);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback); // Resize window events
-  glfwSetCursorPosCallback(window, cursor_position_callback);
-  glfwSetScrollCallback(window, scroll_callback);
+  glfwSetCursorPosCallback(window, cursor_position_callback); // Mouse move event
+  glfwSetScrollCallback(window, scroll_callback); // Mouse scroll event
 
   return window;
 }
@@ -40,6 +40,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
   glViewport(0, 0, width, height);
 }
 
+// Used by processInput and cursor_position_callback to keep track of the mouse left click state
 bool mouseDown = false;
 bool resetMouse = false;
 

@@ -2,6 +2,7 @@
 
 layout (location = 0) in vec3 aPos;
 
+// Send vertex coordinates to the fragment shader
 out vec2 FragCoord;
 
 void main()

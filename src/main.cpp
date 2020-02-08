@@ -14,11 +14,12 @@ const int vertices[] = {
     -1, -1, 1,  // bottom left
     -1,  1, 1   // top left
 };
-const unsigned int indices[] = {  // note that we start from 0!
+const unsigned int indices[] = {
     0, 1, 3,  // first Triangle
     1, 2, 3   // second Triangle
 };
 
+// Offsets and zoom level that are sent to the fragment shader
 double xOffset, yOffset = 0.0;
 double zoom = 1.;
 
@@ -30,6 +31,7 @@ int main()
     exit(1);
   }
 
+  // Create vertex shader
   unsigned int vertexShader;
   vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
@@ -50,6 +52,7 @@ int main()
     }
   }
 
+  // Create fragment shader
   unsigned int fragmentShader;
   fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -70,6 +73,7 @@ int main()
     }
   }
 
+  // Create shader program
   unsigned int shaderProgram;
   shaderProgram = glCreateProgram();
   glAttachShader(shaderProgram, vertexShader);
@@ -138,7 +142,7 @@ int main()
     glfwSwapBuffers(window);
     glfwPollEvents();
 
-
+    // Calculate elapsed time since last frame, to lock fps to 60
     auto endTime = std::chrono::high_resolution_clock::now();
     int elapsed = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
 
@@ -151,6 +155,7 @@ int main()
   return 0;
 }
 
+// Update zoom level, called from setup.cpp
 void updateZoom(double newZoom)
 {
   static double SENSITIVITY = 50.;
@@ -164,6 +169,7 @@ void updateZoom(double newZoom)
   zoom = std::min(2., zoom);
 }
 
+// Update offset coordinates, called from setup.cpp
 void updateOffsetCoords(double x, double y)
 {
   double SENSITIVITY = zoom * 1/300.;
