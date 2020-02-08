@@ -3,15 +3,24 @@
 in vec2 FragCoord;
 out vec4 FragColor;
 
+uniform vec2 uOffset;
+uniform float uZoom;
+
 void main()
 {
   vec2 startPos;
-  startPos.x = ((FragCoord.x + 1.0)/2 * 3.5) - 2.5;
-  startPos.y = FragCoord.y;
+
+  vec2 originCoord = FragCoord.xy * uZoom;
+
+  startPos.x = ((originCoord.x + 1.0)/2 * 2.5) - 2.;
+  startPos.y = originCoord.y;
+  startPos += uOffset;
 
   vec2 pos;
   int iteration = 0;
-  int max_iterations = 100;
+  int max_iterations = int(100. / (uZoom/2.+1.));
+  max_iterations = min(max_iterations, 10000);
+  // int max_iterations = 100;
 
   while (pos.x*pos.x + pos.y*pos.y <= 2.0*2.0 && iteration < max_iterations)
   {

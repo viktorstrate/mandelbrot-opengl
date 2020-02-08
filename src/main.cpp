@@ -1,24 +1,26 @@
 #include <iostream>
 #include <string>
+#include <unistd.h>
+#include <cmath>
+#include <algorithm>
 
 #include "setup.h"
 #include "shaders_generated.h"
 #include "shaders.h"
 
-
-// setup.cpp
-bool setupOpenGL();
-
-int vertices[] = {
+const int vertices[] = {
       1,  1, 1,  // top right
       1, -1, 1,  // bottom right
     -1, -1, 1,  // bottom left
     -1,  1, 1   // top left
 };
-unsigned int indices[] = {  // note that we start from 0!
+const unsigned int indices[] = {  // note that we start from 0!
     0, 1, 3,  // first Triangle
     1, 2, 3   // second Triangle
 };
+
+double xOffset, yOffset = 0.0;
+double zoom = 1.;
 
 int main()
 {
@@ -110,26 +112,61 @@ int main()
   glVertexAttribPointer(0, 3, GL_INT, GL_FALSE, 3 * sizeof(int), (void*)0);
   glEnableVertexAttribArray(0);
 
+  int offsetUniform = glGetUniformLocation(shaderProgram, "uOffset");
+  int zoomUniform = glGetUniformLocation(shaderProgram, "uZoom");
+
   while (!glfwWindowShouldClose(window))
   {
+
+    auto startTime = std::chrono::high_resolution_clock::now();
+
     processInput(window);
 
     // Render
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // draw our first triangle
     glUseProgram(shaderProgram);
-    glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-    //glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // Uniforms
+    glUniform2f(offsetUniform, xOffset, yOffset);
+    glUniform1f(zoomUniform, zoom);
+
+    glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-    // glBindVertexArray(0); // no need to unbind it every time
 
     glfwSwapBuffers(window);
     glfwPollEvents();
+
+
+    auto endTime = std::chrono::high_resolution_clock::now();
+    int elapsed = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+
+    int wait = std::max(int(1000000./60.) - elapsed, 0);
+    usleep(wait);
+
   }
 
   glfwTerminate();
   return 0;
 }
 
+void updateZoom(double newZoom)
+{
+  static double SENSITIVITY = 50.;
+
+  if (newZoom > 0)
+    zoom = zoom / (newZoom/SENSITIVITY+1);
+
+  if (newZoom < 0)
+    zoom = zoom * ((newZoom * -1.)/SENSITIVITY+1);
+
+  zoom = std::min(2., zoom);
+}
+
+void updateOffsetCoords(double x, double y)
+{
+  double SENSITIVITY = zoom * 1/300.;
+  xOffset -= x * SENSITIVITY;
+  yOffset += y * SENSITIVITY;
+}
