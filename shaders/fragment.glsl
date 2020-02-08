@@ -6,6 +6,8 @@ out vec4 FragColor;
 uniform vec2 uOffset;
 uniform float uZoom;
 
+#define MAX_ITERATIONS 100
+
 vec3 hsv2rgb(vec3 c);
 
 void main()
@@ -18,11 +20,9 @@ void main()
   startPos.y = originCoord.y;
   startPos += uOffset;
 
-  vec2 pos;
+  vec2 pos = vec2(0.);
   int iteration = 0;
-  int max_iterations = int(1000.);
-  max_iterations = min(max_iterations, 10000);
-  // int max_iterations = 100;
+  int max_iterations = int(MAX_ITERATIONS);
 
   while (pos.x*pos.x + pos.y*pos.y <= 2.0*2.0 && iteration < max_iterations)
   {
