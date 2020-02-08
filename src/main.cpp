@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <cmath>
 #include <algorithm>
+#include <chrono>
 
 #include "setup.h"
 #include "shaders_generated.h"
